@@ -1,3 +1,3 @@
 <template>
-/* eslint-disable */
+  /* eslint-disable */
 </template>
