@@ -34,6 +34,7 @@ export default{
   padding: 1.25rem;
 }
 main {
+  text-align: center;
   --bg-primary: #ffffff;
   --txt-primary: #000;
 }

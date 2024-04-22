@@ -2,7 +2,6 @@
   <div id="page-header">
     <v-breadcrumbs
       divider=">"
-      :items="breadcrumbs"
     />
     <h1> {{ title }} </h1>
     <h3> {{ description }} </h3>
@@ -13,10 +12,6 @@
 export default {
   name: 'PageHeader',
   props: {
-    breadcrumbs: {
-      type: Array,
-      required: true
-    },
     title: {
       type: String,
       required: true

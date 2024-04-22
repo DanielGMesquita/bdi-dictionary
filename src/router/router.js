@@ -4,7 +4,7 @@ import SynonymsTable from '../components/synonyms/SynonymsTable.vue';
 
 const routes = [
   {
-    path: "/synonyms",
+    path: "/chart",
     name: 'synonymsChart',
     component: SynonymsChart,
   },
