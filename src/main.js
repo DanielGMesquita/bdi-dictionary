@@ -1,7 +1,10 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router/router.js';
-import vuetify from '@/plugins/vuetify';
+import { createVuetify } from 'vuetify';
+import 'vuetify/dist/vuetify.min.css';
+
+const vuetify = createVuetify();
 
 createApp(App)
     .use(router)

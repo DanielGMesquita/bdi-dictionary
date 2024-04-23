@@ -5,11 +5,14 @@
       :description="labels.description"
     />
     <input
-          type="text"
-          class="input"
-          placeholder="Qual tarefa você deseja iniciar?"
-          v-model="word"
-        />
+      type="text"
+      class="input"
+      placeholder="Qual tarefa você deseja iniciar?"
+      v-model="word"
+    />
+    <button @click="fetchData">Buscar Sinônimos</button>
+
+    <div ref="chartContainer" style="width: 100%; height: 600px;"></div>
   </div>
 </template>
 
@@ -30,106 +33,82 @@ export default {
         executionDate: 'Escolha a palavra consultar:'
       },
     },
-    items: [],
     menu: false,
     word: "",
-    words: [],
+    data: null,
   }),
   methods: {
     fetchData() {
-      // Faz uma chamada ao backend para obter os sinônimos da palavra fornecida
-      axios.get(`https://dictionary-api.up.railway.app/dictionary/synonyms?word=${this.word}`)
-        .then(response => {
-          const synonyms = response.data.synonyms;
-          // Adiciona a palavra original à lista de nós
-          this.nodes.push({ id: this.word });
-          // Adiciona os sinônimos à lista de nós
-          synonyms.forEach(synonym => {
-            this.nodes.push({ id: synonym });
-            // Adiciona links entre a palavra original e seus sinônimos
-            this.links.push({ source: this.word, target: synonym });
+      if (this.word.trim() !== "") {
+        // Fazer a chamada ao backend para obter os sinônimos da palavra fornecida
+        axios.get(`https://dictionary-api.up.railway.app/dictionary/synonyms?word=${this.word}`)
+          .then(response => {
+            this.data = response.data;
+            this.createChart();
+          })
+          .catch(error => {
+            console.error('Erro ao obter os sinônimos:', error);
           });
-          // Chama a função para renderizar o gráfico
-          this.renderGraph();
-        })
-        .catch(error => {
-          console.error('Erro ao obter os sinônimos:', error);
-        });
+      }
     },
-    renderGraph() {
-      const width = 600;
-      const height = 400;
+    createChart() {
+      const width = 928;
+      const height = width;
+      const cx = width * 0.5;
+      const cy = height * 0.54;
+      const radius = Math.min(width, height) / 2 - 80;
 
-      const svg = d3.select(this.$refs.graph)
-        .append('svg')
-        .attr('width', width)
-        .attr('height', height);
+      const tree = d3.cluster()
+        .size([2 * Math.PI, radius])
+        .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
 
-      // Crie a simulação de força para posicionar os nós
-      const simulation = d3.forceSimulation(this.nodes)
-        .force('link', d3.forceLink(this.links).distance(100))
-        .force('charge', d3.forceManyBody().strength(-200))
-        .force('center', d3.forceCenter(width / 2, height / 2));
+      const root = tree(d3.hierarchy(this.data.synonymsTree)
+        .sort((a, b) => d3.ascending(a.data.name, b.data.name)));
 
-      // Crie os elementos SVG para representar os links
-      const link = svg.selectAll('.link')
-        .data(this.links)
-        .enter().append('line')
-        .attr('class', 'link');
+      const svgContainer = d3.select(this.$refs.chartContainer);
 
-      // Crie os elementos SVG para representar os nós
-      const node = svg.selectAll('.node')
-        .data(this.nodes)
-        .enter().append('circle')
-        .attr('class', 'node')
-        .attr('r', 10)
-        .call(d3.drag()
-          .on('start', dragstarted)
-          .on('drag', dragged)
-          .on('end', dragended));
+      svgContainer.selectAll("svg").remove();
 
-      // Adicione texto aos nós
-      const labels = svg.selectAll(null)
-        .data(this.nodes)
-        .enter()
-        .append('text')
-        .text(d => d.id)
-        .attr('font-size', 12);
+      const svg = svgContainer.append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("viewBox", [-cx, -cy, width, height])
+        .attr("style", "width: 100%; height: auto; font: 10px sans-serif;");
 
-      // Defina o comportamento de arrastar dos nós
-      function dragstarted(d) {
-        if (!event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-      }
+      svg.append("g")
+        .attr("fill", "none")
+        .attr("stroke", "#555")
+        .attr("stroke-opacity", 0.4)
+        .attr("stroke-width", 1.5)
+        .selectAll()
+        .data(root.links())
+        .join("path")
+        .attr("d", d3.linkRadial()
+          .angle(d => d.x)
+          .radius(d => d.y));
 
-      function dragged(d) {
-        d.fx = event.x;
-        d.fy = event.y;
-      }
+      svg.append("g")
+        .selectAll()
+        .data(root.descendants())
+        .join("circle")
+        .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
+        .attr("fill", d => d.children ? "#555" : "#999")
+        .attr("r", 2.5);
 
-      function dragended(d) {
-        if (!event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
-      }
-
-      // Atualize a posição dos elementos SVG conforme a simulação avança
-      simulation.on('tick', () => {
-        link
-          .attr('x1', d => d.source.x)
-          .attr('y1', d => d.source.y)
-          .attr('x2', d => d.target.x)
-          .attr('y2', d => d.target.y);
-
-        node
-          .attr('cx', d => d.x)
-          .attr('cy', d => d.y);
-
-        labels
-          .attr('x', d => d.x + 15)
-          .attr('y', d => d.y + 5);
-      });
+      svg.append("g")
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-width", 3)
+        .selectAll()
+        .data(root.descendants())
+        .join("text")
+        .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0) rotate(${d.x >= Math.PI ? 180 : 0})`)
+        .attr("dy", "0.31em")
+        .attr("x", d => d.x < Math.PI === !d.children ? 6 : -6)
+        .attr("text-anchor", d => d.x < Math.PI === !d.children ? "start" : "end")
+        .attr("paint-order", "stroke")
+        .attr("stroke", "white")
+        .attr("fill", "currentColor")
+        .text(d => d.data.name);
     }
   }
 };
