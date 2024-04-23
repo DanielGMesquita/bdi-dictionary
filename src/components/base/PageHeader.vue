@@ -1,9 +1,6 @@
 <template>
   <div id="page-header">
-    <v-breadcrumbs
-      divider=">"
-    />
-    <h1> {{ title }} </h1>
+    <h2> {{ title }} </h2>
     <h3> {{ description }} </h3>
   </div>
 </template>
@@ -23,17 +20,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-div#page-header {
-  padding-bottom: 25px;
-
-  h1 {
-    padding-bottom: 10px;
-  }
-
-  ul.v-breadcrumbs {
-    padding-left: 0;
-  }
-}
-</style>

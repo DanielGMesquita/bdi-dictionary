@@ -1,17 +1,14 @@
 <template>
   <header>
-    <button class="button" @click="changeTheme">
-      {{ buttonText }}
-    </button>
     <nav class="panel mt-5">
       <ul>
-        <li>
+        <!-- <li>
           <router-link to="/" class="link">
             <i class="fas fa-tasks">
               Sinônimos
             </i>
           </router-link>
-        </li>
+        </li> -->
         <li>
           <router-link to="/chart" class="link">
             <i class="fas fa-project-diagram">

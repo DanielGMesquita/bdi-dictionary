@@ -5,11 +5,12 @@
       :description="labels.description"
     />
     <input
-          type="text"
-          class="input"
-          placeholder="Qual tarefa você deseja iniciar?"
-          v-model="word"
-        />
+      type="text"
+      class="input"
+      placeholder="Qual palavra você deseja buscar?"
+      v-model="word"
+    />
+    <button @click="fetchData" class="custom-button">Buscar Sinônimos</button>
   </div>
 </template>
 
@@ -28,8 +29,6 @@ export default {
         executionDate: 'Escolha a palavra consultar:'
       },
     },
-    items: [],
-    menu: false,
     word: "",
   }),
   methods: {

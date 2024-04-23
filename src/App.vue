@@ -1,10 +1,10 @@
 
 <template>
   <main class="columns is-gapless is-multiline" :class="{ 'dark-mode': darkTheme }">
-    <div class="column is-one-quarter">
+    <div class="column is-one-fifth">
       <Sidebar @themeChanged = "changeTheme"/>
     </div>
-    <div class="column is-three-quarter content">
+    <div class="column is-four-quarter content">
       <router-view></router-view>
     </div>
   </main>

@@ -7,10 +7,10 @@
     <input
       type="text"
       class="input"
-      placeholder="Qual tarefa você deseja iniciar?"
+      placeholder="Qual palavra você deseja buscar?"
       v-model="word"
     />
-    <button @click="fetchData">Buscar Sinônimos</button>
+    <button @click="fetchData" class="custom-button">Buscar Sinônimos</button>
 
     <div ref="chartContainer" style="width: 100%; height: 600px;"></div>
   </div>
@@ -33,7 +33,6 @@ export default {
         executionDate: 'Escolha a palavra consultar:'
       },
     },
-    menu: false,
     word: "",
     data: null,
   }),
@@ -52,7 +51,7 @@ export default {
       }
     },
     createChart() {
-      const width = 928;
+      const width = 600;
       const height = width;
       const cx = width * 0.5;
       const cy = height * 0.54;
@@ -73,7 +72,7 @@ export default {
         .attr("width", width)
         .attr("height", height)
         .attr("viewBox", [-cx, -cy, width, height])
-        .attr("style", "width: 100%; height: auto; font: 10px sans-serif;");
+        .attr("style", "width: 50%; height: auto; font: 10px sans-serif;");
 
       svg.append("g")
         .attr("fill", "none")
@@ -113,3 +112,20 @@ export default {
   }
 };
 </script>
+
+
+<style>
+.custom-button {
+  margin-top: 10px;
+  padding: 10px;
+  color: #fff;
+  background-color: #007bff; /* azul escuro */
+  border-color: #007bff;
+}
+
+/* Estilo para botão em um fundo escuro */
+.dark-bg .custom-button {
+  background-color: #fff;
+  color: #007bff;
+}
+</style>

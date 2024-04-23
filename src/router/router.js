@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import SynonymsChart from '../components/synonyms/SynonymsChart.vue';
-import SynonymsTable from '../components/synonyms/SynonymsTable.vue';
+// import SynonymsTable from '../components/synonyms/SynonymsTable.vue';
 
 const routes = [
   {
@@ -8,11 +8,11 @@ const routes = [
     name: 'synonymsChart',
     component: SynonymsChart,
   },
-  {
-    path: "/",
-    name: 'synonymsTable',
-    component: SynonymsTable,
-  },
+  // {
+  //   path: "/",
+  //   name: 'synonymsTable',
+  //   component: SynonymsTable,
+  // },
 ];
 
 const router = createRouter({
